@@ -1,0 +1,180 @@
+groups:
+- name: qwen-swarm.rules
+  rules:
+  # High Severity Alerts
+  - alert: QwenSwarmDown
+    expr: up{job="qwen-swarm"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: qwen-swarm
+    annotations:
+      summary: "Qwen Swarm instance is down"
+      description: "Qwen Swarm instance {{ $labels.instance }} has been down for more than 1 minute."
+      runbook_url: "https://docs.yourdomain.com/runbooks/qwen-swarm-down"
+
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{job="qwen-swarm",status=~"5.."}[5m]) > 0.1
+    for: 2m
+    labels:
+      severity: critical
+      service: qwen-swarm
+    annotations:
+      summary: "High error rate detected"
+      description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes."
+
+  - alert: HighMemoryUsage
+    expr: (process_resident_memory_bytes / process_virtual_memory_max_bytes) > 0.9
+    for: 5m
+    labels:
+      severity: warning
+      service: qwen-swarm
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage is above 90% for instance {{ $labels.instance }}."
+
+  - alert: HighCPUUsage
+    expr: rate(process_cpu_seconds_total[5m]) > 0.8
+    for: 5m
+    labels:
+      severity: warning
+      service: qwen-swarm
+    annotations:
+      summary: "High CPU usage"
+      description: "CPU usage is above 80% for instance {{ $labels.instance }}."
+
+  - alert: DatabaseConnectionFailure
+    expr: postgres_up == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: postgres
+    annotations:
+      summary: "PostgreSQL database is down"
+      description: "Cannot connect to PostgreSQL database."
+
+  - alert: RedisConnectionFailure
+    expr: redis_up == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: redis
+    annotations:
+      summary: "Redis is down"
+      description: "Cannot connect to Redis instance."
+
+  # Medium Severity Alerts
+  - alert: HighResponseTime
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="qwen-swarm"}[5m])) > 1
+    for: 5m
+    labels:
+      severity: warning
+      service: qwen-swarm
+    annotations:
+      summary: "High response time"
+      description: "95th percentile response time is {{ $value }}s."
+
+  - alert: TaskQueueBacklog
+    expr: qwen_swarm_task_queue_length > 100
+    for: 10m
+    labels:
+      severity: warning
+      service: qwen-swarm
+    annotations:
+      summary: "Task queue backlog"
+      description: "Task queue has {{ $value }} pending tasks."
+
+  - alert: AgentFailureRate
+    expr: rate(qwen_swarm_agent_failures_total[5m]) / rate(qwen_swarm_agent_tasks_total[5m]) > 0.2
+    for: 5m
+    labels:
+      severity: warning
+      service: qwen-swarm
+    annotations:
+      summary: "High agent failure rate"
+      description: "Agent failure rate is {{ $value | humanizePercentage }}."
+
+  - alert: WebSocketConnectionFailure
+    expr: websocket_connections_total == 0
+    for: 5m
+    labels:
+      severity: warning
+      service: qwen-swarm
+    annotations:
+      summary: "No WebSocket connections"
+      description: "No active WebSocket connections detected."
+
+  # Low Severity Alerts
+  - alert: DiskSpaceUsage
+    expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.85
+    for: 15m
+    labels:
+      severity: info
+      service: node
+    annotations:
+      summary: "High disk usage"
+      description: "Disk usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}."
+
+  - alert: ActiveAgentsLow
+    expr: qwen_swarm_active_agents < 2
+    for: 10m
+    labels:
+      severity: info
+      service: qwen-swarm
+    annotations:
+      summary: "Low number of active agents"
+      description: "Only {{ $value }} agents are currently active."
+
+- name: business.rules
+  rules:
+  - alert: LowTaskProcessingRate
+    expr: rate(qwen_swarm_tasks_completed_total[15m]) < 10
+    for: 15m
+    labels:
+      severity: warning
+      service: qwen-swarm-business
+    annotations:
+      summary: "Low task processing rate"
+      description: "Task processing rate is {{ $value }} tasks/second."
+
+  - alert: ConsensusFailure
+    expr: rate(qwen_swarm_consensus_failures_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: warning
+      service: qwen-swarm-business
+    annotations:
+      summary: "Consensus mechanism failures"
+      description: "Consensus failure rate is {{ $value | humanizePercentage }}."
+
+  - alert: LearningSystemInactive
+    expr: time() - qwen_swarm_learning_last_update > 3600
+    for: 30m
+    labels:
+      severity: info
+      service: qwen-swarm-business
+    annotations:
+      summary: "Learning system inactive"
+      description: "Learning system hasn't updated in over an hour."
+
+- name: infrastructure.rules
+  rules:
+  - alert: PodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+      service: kubernetes
+    annotations:
+      summary: "Pod is crash looping"
+      description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently."
+
+  - alert: NodeNotReady
+    expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+    for: 10m
+    labels:
+      severity: critical
+      service: kubernetes
+    annotations:
+      summary: "Node is not ready"
+      description: "Node {{ $labels.node }} has been not ready for more than 10 minutes."

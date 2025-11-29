@@ -1,0 +1,304 @@
+{
+  "system": {
+    "name": "Qwen Swarm",
+    "version": "1.0.0",
+    "environment": "production",
+    "logLevel": "info",
+    "maxAgents": 50,
+    "autoScaling": true,
+    "gracefulShutdownTimeout": 30000
+  },
+  "api": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "cors": {
+      "enabled": true,
+      "origin": ["https://yourdomain.com", "https://api.yourdomain.com"],
+      "credentials": true
+    },
+    "rateLimit": {
+      "windowMs": 60000,
+      "maxRequests": 100,
+      "skipSuccessfulRequests": false,
+      "skipFailedRequests": false
+    },
+    "compression": {
+      "enabled": true,
+      "level": 6,
+      "threshold": 1024
+    },
+    "helmet": {
+      "enabled": true,
+      "contentSecurityPolicy": {
+        "directives": {
+          "defaultSrc": ["'self'"],
+          "scriptSrc": ["'self'", "'unsafe-inline'"],
+          "styleSrc": ["'self'", "'unsafe-inline'"],
+          "imgSrc": ["'self'", "data:", "https:"]
+        }
+      }
+    }
+  },
+  "websocket": {
+    "port": 3001,
+    "host": "0.0.0.0",
+    "path": "/ws",
+    "compression": true,
+    "maxConnections": 10000,
+    "heartbeatInterval": 30000,
+    "messageQueueSize": 1000
+  },
+  "database": {
+    "type": "postgresql",
+    "host": "postgres-service",
+    "port": 5432,
+    "name": "qwen_swarm_prod",
+    "ssl": true,
+    "pool": {
+      "min": 5,
+      "max": 20,
+      "idleTimeoutMillis": 30000,
+      "acquireTimeoutMillis": 60000,
+      "createTimeoutMillis": 30000,
+      "destroyTimeoutMillis": 5000,
+      "reapIntervalMillis": 1000,
+      "createRetryIntervalMillis": 200
+    },
+    "queryTimeout": 30000,
+    "statementTimeout": 25000,
+    "connectionTimeoutMillis": 2000
+  },
+  "redis": {
+    "enabled": true,
+    "host": "redis-service",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "db": 0,
+    "keyPrefix": "qwen-swarm:",
+    "retryDelayOnFailover": 100,
+    "enableReadyCheck": false,
+    "maxRetriesPerRequest": 3,
+    "lazyConnect": true,
+    "family": 4,
+    "keepAlive": 30000
+  },
+  "cache": {
+    "enabled": true,
+    "ttl": {
+      "default": 300,
+      "short": 60,
+      "medium": 300,
+      "long": 3600,
+      "veryLong": 86400
+    },
+    "maxSize": 10000,
+    "strategy": "lru",
+    "updateAgeOnGet": true
+  },
+  "security": {
+    "authentication": {
+      "required": true,
+      "jwt": {
+        "algorithm": "RS256",
+        "issuer": "qwen-swarm",
+        "audience": "qwen-swarm-clients",
+        "expiresIn": "1h",
+        "refreshExpiresIn": "7d",
+        "clockTolerance": 30
+      },
+      "apiKey": {
+        "header": "X-API-Key",
+        "prefix": "Bearer",
+        "length": 32
+      }
+    },
+    "authorization": {
+      "rbac": {
+        "enabled": true,
+        "defaultRole": "viewer"
+      }
+    },
+    "encryption": {
+      "enabled": true,
+      "algorithm": "aes-256-gcm",
+      "keyRotationDays": 90
+    },
+    "audit": {
+      "enabled": true,
+      "logLevel": "info",
+      "retentionDays": 365
+    },
+    "session": {
+      "timeout": 1800000,
+      "maxConcurrent": 3,
+      "secureCookies": true,
+      "sameSite": "strict"
+    }
+  },
+  "learning": {
+    "enabled": true,
+    "algorithm": "hybrid",
+    "learningRate": 0.01,
+    "explorationRate": 0.1,
+    "memorySize": 50000,
+    "patternRetentionDays": 90,
+    "modelUpdateInterval": 3600000
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": {
+      "enabled": true,
+      "interval": 30000,
+      "labels": {
+        "service": "qwen-swarm",
+        "version": "1.0.0",
+        "environment": "production"
+      }
+    },
+    "healthCheck": {
+      "enabled": true,
+      "interval": 30000,
+      "timeout": 5000,
+      "failureThreshold": 3
+    },
+    "tracing": {
+      "enabled": true,
+      "jaeger": {
+        "endpoint": "http://jaeger:14268/api/traces",
+        "service": "qwen-swarm",
+        "samplingRate": 0.1
+      }
+    }
+  },
+  "providers": {
+    "qwen": {
+      "enabled": true,
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model": "qwen-max",
+      "maxTokens": 4000,
+      "temperature": 0.7,
+      "timeout": 30000,
+      "rateLimit": {
+        "requestsPerSecond": 10,
+        "tokensPerSecond": 10000,
+        "burstLimit": 100,
+        "retryAfter": 1000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMultiplier": 2,
+        "initialDelay": 1000,
+        "maxDelay": 10000
+      }
+    },
+    "openai": {
+      "enabled": true,
+      "endpoint": "https://api.openai.com/v1",
+      "model": "gpt-4",
+      "maxTokens": 4000,
+      "temperature": 0.7,
+      "timeout": 30000,
+      "rateLimit": {
+        "requestsPerSecond": 5,
+        "tokensPerSecond": 10000,
+        "burstLimit": 50,
+        "retryAfter": 2000
+      }
+    },
+    "claude": {
+      "enabled": true,
+      "endpoint": "https://api.anthropic.com",
+      "model": "claude-3-sonnet-20240229",
+      "maxTokens": 4000,
+      "temperature": 0.7,
+      "timeout": 30000,
+      "rateLimit": {
+        "requestsPerSecond": 5,
+        "tokensPerSecond": 10000,
+        "burstLimit": 50,
+        "retryAfter": 2000
+      }
+    }
+  },
+  "agents": {
+    "queen": {
+      "maxConcurrency": 1,
+      "memorySize": 100000,
+      "healthCheckInterval": 30000,
+      "autoScale": true,
+      "minInstances": 1,
+      "maxInstances": 3
+    },
+    "worker": {
+      "maxConcurrency": 5,
+      "memorySize": 50000,
+      "healthCheckInterval": 30000,
+      "autoScale": true,
+      "minInstances": 2,
+      "maxInstances": 20
+    },
+    "specialist": {
+      "maxConcurrency": 3,
+      "memorySize": 75000,
+      "healthCheckInterval": 30000,
+      "autoScale": true,
+      "minInstances": 1,
+      "maxInstances": 10
+    }
+  },
+  "tasks": {
+    "queue": {
+      "maxSize": 10000,
+      "processingBatchSize": 100,
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMultiplier": 2,
+        "initialDelay": 1000,
+        "maxDelay": 30000
+      }
+    },
+    "timeout": 300000,
+    "maxConcurrent": 1000
+  },
+  "communication": {
+    "messageQueue": {
+      "maxSize": 1000,
+      "batchSize": 100,
+      "flushInterval": 1000
+    },
+    "compression": true,
+    "encryption": false
+  },
+  "consensus": {
+    "timeout": 60000,
+    "minParticipants": 2,
+    "algorithms": {
+      "simple_majority": {
+        "enabled": true,
+        "threshold": 0.5
+      },
+      "super_majority": {
+        "enabled": true,
+        "threshold": 0.67
+      },
+      "unanimous": {
+        "enabled": true,
+        "threshold": 1.0
+      }
+    }
+  },
+  "performance": {
+    "profiling": {
+      "enabled": false,
+      "interval": 60000
+    },
+    "memory": {
+      "maxOldSpaceSize": 4096,
+      "maxSemiSpaceSize": 128
+    },
+    "cluster": {
+      "enabled": true,
+      "workers": "max"
+    }
+  }
+}

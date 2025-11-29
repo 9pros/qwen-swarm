@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  qwen-swarm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    container_name: qwen-swarm-dev
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - API_PORT=3000
+      - API_HOST=0.0.0.0
+      - WS_PORT=3001
+      - WS_HOST=0.0.0.0
+      - DB_TYPE=sqlite
+      - DB_HOST=/app/data
+      - DB_NAME=qwen_swarm_dev.db
+      - LOG_LEVEL=debug
+      - SKIP_AUTH=false
+      - MOCK_PROVIDERS=false
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - qwen_dev_data:/app/data
+      - qwen_dev_logs:/app/logs
+    depends_on:
+      - redis-dev
+    networks:
+      - qwen-dev-network
+    command: npm run dev
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: qwen-swarm-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - qwen-dev-network
+
+volumes:
+  qwen_dev_data:
+    driver: local
+  qwen_dev_logs:
+    driver: local
+
+networks:
+  qwen-dev-network:
+    driver: bridge

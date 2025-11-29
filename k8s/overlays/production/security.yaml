@@ -1,0 +1,106 @@
+---
+apiVersion: policy/v1
+kind: PodSecurityPolicy
+metadata:
+  name: qwen-swarm-psp
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: qwen-swarm
+  annotations:
+    iam.amazonaws.com/role: arn:aws:iam::YOUR_ACCOUNT:role/qwen-swarm-prod
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: qwen-swarm-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: qwen-swarm-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: qwen-swarm
+roleRef:
+  kind: Role
+  name: qwen-swarm-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: qwen-swarm-netpol
+spec:
+  podSelector:
+    matchLabels:
+      app: qwen-swarm
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector:
+        matchLabels:
+          app: qwen-swarm
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 3001
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: qwen-swarm
+    - podSelector:
+        matchLabels:
+          app: qwen-swarm
+          component: postgres
+      ports:
+      - protocol: TCP
+        port: 5432
+    - podSelector:
+        matchLabels:
+          app: qwen-swarm
+          component: redis
+      ports:
+      - protocol: TCP
+        port: 6379
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 443

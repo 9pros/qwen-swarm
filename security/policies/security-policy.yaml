@@ -1,0 +1,168 @@
+# Security Policy Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: security-policy
+  labels:
+    app: qwen-swarm
+    component: security
+data:
+  security.json: |
+    {
+      "authentication": {
+        "required": true,
+        "methods": ["jwt", "api_key"],
+        "jwt": {
+          "algorithm": "RS256",
+          "issuer": "qwen-swarm",
+          "audience": "qwen-swarm-clients",
+          "expiresIn": "1h",
+          "refreshExpiresIn": "7d"
+        },
+        "api_key": {
+          "header": "X-API-Key",
+          "prefix": "Bearer",
+          "length": 32
+        }
+      },
+      "authorization": {
+        "rbac": {
+          "enabled": true,
+          "default_role": "viewer",
+          "roles": {
+            "admin": {
+              "permissions": ["*"],
+              "description": "Full system access"
+            },
+            "operator": {
+              "permissions": ["agents:*", "tasks:*", "system:read"],
+              "description": "Operational access"
+            },
+            "developer": {
+              "permissions": ["agents:read", "tasks:*", "providers:read"],
+              "description": "Developer access"
+            },
+            "viewer": {
+              "permissions": ["agents:read", "tasks:read", "system:read"],
+              "description": "Read-only access"
+            }
+          }
+        }
+      },
+      "input_validation": {
+        "enabled": true,
+        "sanitization": {
+          "html": true,
+          "sql": true,
+          "nosql": true,
+          "xss": true,
+          "csrf": true
+        },
+        "limits": {
+          "max_request_size": "10mb",
+          "max_field_length": 10000,
+          "max_array_length": 1000,
+          "allowed_mime_types": ["application/json", "text/plain"]
+        }
+      },
+      "rate_limiting": {
+        "enabled": true,
+        "global": {
+          "window_ms": 60000,
+          "max_requests": 1000
+        },
+        "per_user": {
+          "window_ms": 60000,
+          "max_requests": 100
+        },
+        "per_ip": {
+          "window_ms": 60000,
+          "max_requests": 50
+        },
+        "endpoints": {
+          "/api/v1/agents": {
+            "max_requests": 10,
+            "window_ms": 60000
+          },
+          "/api/v1/tasks": {
+            "max_requests": 50,
+            "window_ms": 60000
+          }
+        }
+      },
+      "encryption": {
+        "at_rest": {
+          "enabled": true,
+          "algorithm": "AES-256-GCM",
+          "key_rotation_days": 90
+        },
+        "in_transit": {
+          "tls": {
+            "min_version": "1.2",
+            "ciphers": [
+              "TLS_AES_256_GCM_SHA384",
+              "TLS_CHACHA20_POLY1305_SHA256",
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        }
+      },
+      "audit_logging": {
+        "enabled": true,
+        "events": [
+          "authentication_success",
+          "authentication_failure",
+          "authorization_denied",
+          "data_access",
+          "data_modification",
+          "system_configuration",
+          "security_policy_change"
+        ],
+        "retention_days": 365,
+        "fields": [
+          "timestamp",
+          "user_id",
+          "ip_address",
+          "user_agent",
+          "action",
+          "resource",
+          "result",
+          "details"
+        ]
+      },
+      "security_headers": {
+        "enabled": true,
+        "headers": {
+          "X-Frame-Options": "DENY",
+          "X-Content-Type-Options": "nosniff",
+          "X-XSS-Protection": "1; mode=block",
+          "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+          "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
+          "Referrer-Policy": "strict-origin-when-cross-origin"
+        }
+      },
+      "webhook_security": {
+        "enabled": true,
+        "verification": {
+          "signature_header": "X-Hub-Signature-256",
+          "secret_rotation_days": 30
+        },
+        "ip_whitelist": [
+          "192.168.1.0/24",
+          "10.0.0.0/8"
+        ]
+      },
+      "api_key_management": {
+        "enabled": true,
+        "rotation_days": 90,
+        "max_keys_per_user": 5,
+        "require_https": true
+      },
+      "session_management": {
+        "enabled": true,
+        "timeout_minutes": 30,
+        "max_concurrent_sessions": 3,
+        "secure_cookies": true,
+        "same_site_policy": "strict"
+      }
+    }

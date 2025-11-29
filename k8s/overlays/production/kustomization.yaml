@@ -1,0 +1,68 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: qwen-swarm-production
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+bases:
+- ../../base
+
+namespace: qwen-swarm-prod
+
+namePrefix: prod-
+
+replicas:
+- name: qwen-swarm
+  count: 5
+
+images:
+- name: qwen-swarm
+  newTag: v1.0.0
+
+patchesStrategicMerge:
+- replica-count.yaml
+- resources.yaml
+- security.yaml
+- autoscaling.yaml
+
+patchesJson6902:
+- target:
+    kind: Ingress
+    name: qwen-swarm-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts
+      value: ["api.yourdomain.com", "yourdomain.com"]
+    - op: replace
+      path: /spec/rules/0/host
+      value: "api.yourdomain.com"
+    - op: replace
+      path: /spec/rules/1/host
+      value: "yourdomain.com"
+
+configMapGenerator:
+- name: qwen-swarm-config
+  behavior: merge
+  literals:
+  - log-level=warn
+  - monitoring-enabled=true
+  - learning-enabled=true
+  - rate-limit-max-requests=200
+
+secretGenerator:
+- name: qwen-swarm-secrets
+  behavior: merge
+  literals:
+  - db-name=qwen_swarm_prod
+  - db-username=qwen_prod_user
+
+vars:
+- name: DOMAIN
+  objref:
+    kind: ConfigMap
+    name: qwen-swarm-config
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.domain
