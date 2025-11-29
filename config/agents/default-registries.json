@@ -1,0 +1,180 @@
+{
+  "registries": [
+    {
+      "name": "VoltAgent Subagents",
+      "url": "https://github.com/VoltAgent/awesome-claude-code-subagents",
+      "type": "github",
+      "enabled": true,
+      "description": "The official collection of Claude Code subagents maintained by VoltAgent",
+      "category": "comprehensive",
+      "license": "MIT",
+      "agentCount": 125,
+      "lastUpdated": "2024-11-29T00:00:00Z"
+    },
+    {
+      "name": "Custom Agents",
+      "url": "./config/agents/custom",
+      "type": "local",
+      "enabled": true,
+      "description": "Locally defined custom agents",
+      "category": "custom"
+    }
+  ],
+  "categories": {
+    "core-development": {
+      "name": "Core Development",
+      "description": "Essential development agents for coding, debugging, and architecture",
+      "agents": [
+        "frontend-developer",
+        "backend-developer",
+        "fullstack-developer",
+        "database-specialist",
+        "api-designer",
+        "system-architect",
+        "performance-optimizer"
+      ]
+    },
+    "language-specialists": {
+      "name": "Language Specialists",
+      "description": "Agents specialized in specific programming languages and frameworks",
+      "agents": [
+        "typescript-expert",
+        "python-master",
+        "javascript-guru",
+        "java-developer",
+        "rust-expert",
+        "go-developer",
+        "php-specialist",
+        "ruby-developer"
+      ]
+    },
+    "infrastructure": {
+      "name": "Infrastructure",
+      "description": "DevOps, deployment, and infrastructure management agents",
+      "agents": [
+        "devops-engineer",
+        "kubernetes-specialist",
+        "docker-expert",
+        "cloud-architect",
+        "terraform-engineer",
+        "ci-cd-specialist",
+        "monitoring-expert",
+        "security-engineer"
+      ]
+    },
+    "quality-security": {
+      "name": "Quality & Security",
+      "description": "Testing, code review, and security-focused agents",
+      "agents": [
+        "code-reviewer",
+        "qa-expert",
+        "test-automator",
+        "security-auditor",
+        "performance-engineer",
+        "debugger",
+        "error-detective",
+        "chaos-engineer"
+      ]
+    },
+    "data-ai": {
+      "name": "Data & AI",
+      "description": "Data science, machine learning, and AI-focused agents",
+      "agents": [
+        "data-scientist",
+        "ml-engineer",
+        "ai-researcher",
+        "data-analyst",
+        "bigdata-specialist",
+        "nlp-expert",
+        "computer-vision-engineer",
+        "mlops-engineer"
+      ]
+    },
+    "developer-experience": {
+      "name": "Developer Experience",
+      "description": "Tools and agents that improve developer productivity and experience",
+      "agents": [
+        "documentation-writer",
+        "tooling-expert",
+        "productivity-optimizer",
+        "onboarding-specialist",
+        "training-creator",
+        "accessibility-expert",
+        "ui-ux-designer",
+        "localization-specialist"
+      ]
+    },
+    "specialized-domains": {
+      "name": "Specialized Domains",
+      "description": "Agents for specialized industries and domains",
+      "agents": [
+        "fintech-specialist",
+        "healthcare-expert",
+        "e-commerce-developer",
+        "gaming-developer",
+        "iot-engineer",
+        "blockchain-developer",
+        "ar-vr-expert",
+        "robotics-engineer"
+      ]
+    },
+    "business-product": {
+      "name": "Business & Product",
+      "description": "Product management and business strategy agents",
+      "agents": [
+        "product-manager",
+        "business-analyst",
+        "project-manager",
+        "scrum-master",
+        "agile-coach",
+        "stakeholder-manager",
+        "requirements-analyst",
+        "user-researcher"
+      ]
+    },
+    "meta-orchestration": {
+      "name": "Meta Orchestration",
+      "description": "High-level orchestration and coordination agents",
+      "agents": [
+        "multi-agent-coordinator",
+        "workflow-orchestrator",
+        "agent-organizer",
+        "task-distributor",
+        "context-manager",
+        "knowledge-synthesizer",
+        "performance-monitor",
+        "error-coordinator"
+      ]
+    },
+    "research-analysis": {
+      "name": "Research & Analysis",
+      "description": "Research, analysis, and knowledge discovery agents",
+      "agents": [
+        "market-researcher",
+        "technical-analyst",
+        "competitive-analyst",
+        "trend-analyst",
+        "knowledge-manager",
+        "research-synthesizer",
+        "data-miner",
+        "insight-generator"
+      ]
+    }
+  },
+  "settings": {
+    "autoUpdate": true,
+    "updateInterval": 24,
+    "maxConcurrentAgents": 10,
+    "agentTimeout": 300000,
+    "enableCaching": true,
+    "enableMetrics": true,
+    "cacheDirectory": ".cache/agents",
+    "enabledCategories": [
+      "core-development",
+      "language-specialists",
+      "infrastructure",
+      "quality-security",
+      "meta-orchestration"
+    ]
+  }
+}

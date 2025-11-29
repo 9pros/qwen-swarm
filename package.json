@@ -4,7 +4,8 @@
   "description": "Qwen Code-based swarm orchestration system with self-improving and self-healing capabilities",
   "main": "dist/index.js",
   "bin": {
-    "qwen-swarm": "dist/cli/main.js"
+    "qwen-swarm": "dist/cli/main.js",
+    "qwen-swarm-enhanced": "dist/cli/enhanced-main.js"
   },
   "type": "module",
   "scripts": {
@@ -12,7 +13,9 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "cli": "tsx src/cli/main.ts",
+    "cli:enhanced": "tsx src/cli/enhanced-main.ts",
     "build:cli": "tsc && tsc-alias && chmod +x dist/cli/main.js",
+    "build:enhanced": "tsc && tsc-alias && chmod +x dist/cli/enhanced-main.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=unit",
@@ -36,7 +39,20 @@
     "db:test:setup": "tsx scripts/test-db-setup.ts",
     "db:test:teardown": "tsx scripts/test-db-teardown.ts",
     "perf:benchmark": "node --experimental-modules scripts/benchmark.js",
-    "chaos:simulate": "tsx scripts/chaos-simulator.ts"
+    "chaos:simulate": "tsx scripts/chaos-simulator.ts",
+    "agents:list": "tsx src/cli/agents.ts list",
+    "agents:install": "tsx src/cli/agents.ts install",
+    "agents:uninstall": "tsx src/cli/agents.ts uninstall",
+    "agents:update": "tsx src/cli/agents.ts update",
+    "agents:search": "tsx src/cli/agents.ts search",
+    "agents:info": "tsx src/cli/agents.ts info",
+    "agents:init": "tsx src/cli/agents.ts init",
+    "agents:cleanup": "tsx src/cli/agents.ts cleanup",
+    "agents:stats": "tsx src/cli/agents.ts stats",
+    "agents:registry:add": "tsx src/cli/agents.ts registry add",
+    "agents:registry:remove": "tsx src/cli/agents.ts registry remove",
+    "agents:registry:list": "tsx src/cli/agents.ts registry list",
+    "agents:registry:update": "tsx src/cli/agents.ts registry update"
   },
   "dependencies": {
     "@types/node": "^20.0.0",
@@ -61,7 +77,13 @@
     "chalk": "^5.3.0",
     "inquirer": "^9.2.12",
     "ora": "^7.0.1",
-    "open": "^9.1.0"
+    "open": "^9.1.0",
+    "glob": "^10.3.10",
+    "axios": "^1.6.2",
+    "js-yaml": "^4.1.0",
+    "simple-git": "^3.20.0",
+    "semver": "^7.5.4",
+    "node-cache": "^5.1.2"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
@@ -74,6 +96,8 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/node-cron": "^3.0.11",
+    "@types/js-yaml": "^4.0.9",
+    "@types/semver": "^7.5.6",
     "jest": "^29.7.0",
     "@types/jest": "^29.5.8",
     "ts-jest": "^29.1.1",

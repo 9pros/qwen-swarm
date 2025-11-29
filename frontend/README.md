@@ -277,7 +277,7 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 
 For support and questions:
 
-- 📧 Email: support@qwen-swarm.com
+- 📧 Email: max@9pros.com
 - 💬 Discord: [Join our community](https://discord.gg/qwen-swarm)
 - 📖 Documentation: [docs.qwen-swarm.com](https://docs.qwen-swarm.com)
 - 🐛 Issues: [GitHub Issues](https://github.com/qwen-swarm/qwen-swarm/issues)

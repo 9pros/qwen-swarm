@@ -29,6 +29,166 @@ export interface ProviderConfig {
   temperature: number;
   timeout: number;
   rateLimit: RateLimit;
+  // Enhanced multi-provider support
+  customBaseUrls?: string[];
+  models?: ModelConfiguration;
+  healthCheck?: HealthCheckConfig;
+  costOptimization?: CostOptimizationConfig;
+  loadBalancing?: LoadBalancingConfig;
+}
+
+export interface ModelConfiguration {
+  chatModels: ModelSpec[];
+  visionModels: ModelSpec[];
+  embeddingModels: ModelSpec[];
+  audioModels: ModelSpec[];
+  imageModels: ModelSpec[];
+  defaultChatModel: string;
+  defaultVisionModel: string;
+  defaultEmbeddingModel: string;
+  defaultAudioModel: string;
+  defaultImageModel: string;
+}
+
+export interface ModelSpec {
+  id: string;
+  name: string;
+  type: ModelType;
+  capabilities: ModelCapability[];
+  maxTokens: number;
+  inputLimit: number;
+  outputLimit: number;
+  costPerToken: number;
+  costPerRequest: number;
+  averageLatency: number;
+  quality: ModelQuality;
+  provider: string;
+  deprecated?: boolean;
+  beta?: boolean;
+  customContextWindow?: number;
+}
+
+export enum ModelType {
+  CHAT = 'chat',
+  VISION = 'vision',
+  EMBEDDING = 'embedding',
+  AUDIO = 'audio',
+  IMAGE = 'image',
+  CODE = 'code',
+  REASONING = 'reasoning'
+}
+
+export enum ModelQuality {
+  BASIC = 'basic',
+  STANDARD = 'standard',
+  PREMIUM = 'premium',
+  ULTRA = 'ultra'
+}
+
+export enum ModelCapability {
+  STREAMING = 'streaming',
+  FUNCTION_CALLING = 'function_calling',
+  VISION = 'vision',
+  CODE_GENERATION = 'code_generation',
+  JSON_MODE = 'json_mode',
+  MULTILINGUAL = 'multilingual',
+  LONG_CONTEXT = 'long_context',
+  TOOL_USE = 'tool_use',
+  PARALLEL_PROCESSING = 'parallel_processing',
+  CONTEXTUAL_SEARCH = 'contextual_search'
+}
+
+export interface HealthCheckConfig {
+  enabled: boolean;
+  interval: number;
+  timeout: number;
+  retryAttempts: number;
+  endpoints: string[];
+}
+
+export interface CostOptimizationConfig {
+  enabled: boolean;
+  budgetLimits: BudgetLimits;
+  costThresholds: CostThresholds;
+  modelRanking: ModelRankingConfig;
+  autoOptimize: boolean;
+}
+
+export interface BudgetLimits {
+  daily: number;
+  weekly: number;
+  monthly: number;
+  perRequest: number;
+}
+
+export interface CostThresholds {
+  warningPercentage: number;
+  criticalPercentage: number;
+  autoFailoverPercentage: number;
+}
+
+export interface ModelRankingConfig {
+  weightPerformance: number;
+  weightCost: number;
+  weightLatency: number;
+  weightQuality: number;
+}
+
+export interface LoadBalancingConfig {
+  strategy: LoadBalancingStrategy;
+  weights?: Map<string, number>;
+  failoverEnabled: boolean;
+  circuitBreaker?: CircuitBreakerConfig;
+}
+
+export enum LoadBalancingStrategy {
+  ROUND_ROBIN = 'round_robin',
+  WEIGHTED_ROUND_ROBIN = 'weighted_round_robin',
+  LEAST_CONNECTIONS = 'least_connections',
+  LEAST_RESPONSE_TIME = 'least_response_time',
+  COST_OPTIMIZED = 'cost_optimized',
+  PERFORMANCE_BASED = 'performance_based',
+  ADAPTIVE = 'adaptive'
+}
+
+export interface CircuitBreakerConfig {
+  failureThreshold: number;
+  recoveryTimeout: number;
+  halfOpenMaxCalls: number;
+  monitoringPeriod: number;
+}
+
+export interface ModelBinding {
+  agentType: AgentType;
+  taskType: TaskType;
+  preferredModels: string[];
+  fallbackModels: string[];
+  autoSelection: boolean;
+  performanceThreshold: number;
+  costThreshold: number;
+  latencyThreshold: number;
+}
+
+export enum AgentType {
+  QUEEN = 'queen',
+  WORKER = 'worker',
+  SPECIALIST = 'specialist',
+  COORDINATOR = 'coordinator',
+  ANALYZER = 'analyzer',
+  EXECUTOR = 'executor'
+}
+
+export enum TaskType {
+  STRATEGIC_PLANNING = 'strategic_planning',
+  TACTICAL_EXECUTION = 'tactical_execution',
+  DATA_ANALYSIS = 'data_analysis',
+  CODE_GENERATION = 'code_generation',
+  CONTENT_CREATION = 'content_creation',
+  PROBLEM_SOLVING = 'problem_solving',
+  COMMUNICATION = 'communication',
+  COORDINATION = 'coordination',
+  LEARNING = 'learning',
+  MONITORING = 'monitoring'
 }
 
 export interface RateLimit {
@@ -374,4 +534,252 @@ export interface SystemMetrics {
   networkLatency: number;
   errorRate: number;
   uptime: number;
+}
+
+// Enhanced provider analytics
+export interface ProviderAnalytics {
+  providerId: string;
+  providerType: string;
+  metrics: ProviderDetailedMetrics;
+  costTracking: CostTracking;
+  performanceHistory: PerformanceSnapshot[];
+  usagePatterns: UsagePattern[];
+  healthStatus: ProviderHealthStatus;
+  alerts: ProviderAlert[];
+  recommendations: OptimizationRecommendation[];
+}
+
+export interface ProviderDetailedMetrics {
+  requestMetrics: RequestMetrics;
+  modelMetrics: Map<string, ModelMetrics>;
+  errorMetrics: ErrorMetrics;
+  latencyMetrics: LatencyMetrics;
+  throughputMetrics: ThroughputMetrics;
+  resourceMetrics: ResourceMetrics;
+}
+
+export interface RequestMetrics {
+  totalRequests: number;
+  successfulRequests: number;
+  failedRequests: number;
+  retryCount: number;
+  timeoutCount: number;
+  averageRequestsPerSecond: number;
+  peakRequestsPerSecond: number;
+  requestsByHour: Map<number, number>;
+  requestsByDay: Map<string, number>;
+}
+
+export interface ModelMetrics {
+  modelId: string;
+  requestCount: number;
+  totalTokens: number;
+  averageLatency: number;
+  successRate: number;
+  errorRate: number;
+  costUsage: number;
+  performanceScore: number;
+  qualityScore: number;
+  lastUsed: Date;
+}
+
+export interface ErrorMetrics {
+  totalErrors: number;
+  errorTypes: Map<string, number>;
+  errorRate: number;
+  averageRecoveryTime: number;
+  criticalErrors: number;
+  recentErrors: ErrorDetails[];
+}
+
+export interface ErrorDetails {
+  timestamp: Date;
+  errorType: string;
+  errorMessage: string;
+  context: Record<string, unknown>;
+  resolved: boolean;
+  resolutionTime?: number;
+}
+
+export interface LatencyMetrics {
+  averageLatency: number;
+  medianLatency: number;
+  p95Latency: number;
+  p99Latency: number;
+  minLatency: number;
+  maxLatency: number;
+  latencyByModel: Map<string, number>;
+  latencyByHour: Map<number, number>;
+}
+
+export interface ThroughputMetrics {
+  tokensPerSecond: number;
+  requestsPerSecond: number;
+  averageRequestSize: number;
+  averageResponseSize: number;
+  throughputByModel: Map<string, number>;
+  peakThroughput: number;
+}
+
+export interface ResourceMetrics {
+  cpuUsage: number;
+  memoryUsage: number;
+  networkUsage: number;
+  diskUsage: number;
+  apiQuotaUsage: number;
+  connectionPoolUsage: number;
+}
+
+export interface CostTracking {
+  totalCost: number;
+  costByModel: Map<string, number>;
+  costByDay: Map<string, number>;
+  costByHour: Map<number, number>;
+  tokenCost: number;
+  requestCost: number;
+  budgetUsage: BudgetUsage;
+  costProjection: CostProjection;
+}
+
+export interface BudgetUsage {
+  dailyBudgetUsed: number;
+  weeklyBudgetUsed: number;
+  monthlyBudgetUsed: number;
+  dailyBudgetRemaining: number;
+  weeklyBudgetRemaining: number;
+  monthlyBudgetRemaining: number;
+  budgetAlerts: BudgetAlert[];
+}
+
+export interface BudgetAlert {
+  type: 'daily' | 'weekly' | 'monthly';
+  percentageUsed: number;
+  threshold: number;
+  severity: 'warning' | 'critical';
+  timestamp: Date;
+  acknowledged: boolean;
+}
+
+export interface CostProjection {
+  dailyProjection: number;
+  weeklyProjection: number;
+  monthlyProjection: number;
+  confidence: number;
+  factors: ProjectionFactor[];
+}
+
+export interface ProjectionFactor {
+  factor: string;
+  impact: number;
+  confidence: number;
+}
+
+export interface PerformanceSnapshot {
+  timestamp: Date;
+  latency: number;
+  throughput: number;
+  successRate: number;
+  errorRate: number;
+  resourceUsage: ResourceMetrics;
+  cost: number;
+}
+
+export interface UsagePattern {
+  pattern: string;
+  frequency: number;
+  confidence: number;
+  description: string;
+  recommendations: string[];
+  lastObserved: Date;
+}
+
+export interface ProviderHealthStatus {
+  status: 'healthy' | 'degraded' | 'unhealthy' | 'critical';
+  lastHealthCheck: Date;
+  uptime: number;
+  downtime: number;
+  incidents: HealthIncident[];
+  recoveryTime: number;
+}
+
+export interface HealthIncident {
+  id: string;
+  startTime: Date;
+  endTime?: Date;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  resolution?: string;
+  impact: string;
+  duration?: number;
+}
+
+export interface ProviderAlert {
+  id: string;
+  type: AlertType;
+  severity: AlertSeverity;
+  message: string;
+  timestamp: Date;
+  acknowledged: boolean;
+  resolvedAt?: Date;
+  context: Record<string, unknown>;
+  recommendedAction?: string;
+}
+
+export enum AlertType {
+  PERFORMANCE_DEGRADATION = 'performance_degradation',
+  HIGH_ERROR_RATE = 'high_error_rate',
+  COST_OVERAGE = 'cost_overage',
+  QUOTA_EXCEEDED = 'quota_exceeded',
+  PROVIDER_DOWNTIME = 'provider_downtime',
+  LATENCY_SPIKE = 'latency_spike',
+  SECURITY_ISSUE = 'security_issue',
+  CONFIGURATION_ERROR = 'configuration_error'
+}
+
+export interface OptimizationRecommendation {
+  id: string;
+  type: RecommendationType;
+  priority: RecommendationPriority;
+  description: string;
+  expectedImpact: string;
+  implementation: ImplementationDetails;
+  timestamp: Date;
+  applied: boolean;
+  result?: RecommendationResult;
+}
+
+export enum RecommendationType {
+  MODEL_SWITCH = 'model_switch',
+  LOAD_BALANCING = 'load_balancing',
+  COST_OPTIMIZATION = 'cost_optimization',
+  PERFORMANCE_IMPROVEMENT = 'performance_improvement',
+  CONFIGURATION_CHANGE = 'configuration_change',
+  PROTOCOL_CHANGE = 'protocol_change'
+}
+
+export enum RecommendationPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical'
+}
+
+export interface ImplementationDetails {
+  steps: string[];
+  estimatedTime: number;
+  complexity: 'low' | 'medium' | 'high';
+  risk: 'low' | 'medium' | 'high';
+  requiredChanges: string[];
+  rollbackPlan: string;
+}
+
+export interface RecommendationResult {
+  success: boolean;
+  actualImpact: string;
+  metrics: {
+    before: Record<string, number>;
+    after: Record<string, number>;
+  };
+  issues?: string[];
+  timestamp: Date;
 }
