@@ -1,0 +1,33 @@
+{
+  "swarm": {
+    "enabled": true,
+    "agents": {
+      "queen": {
+        "name": "Queen Agent",
+        "model": "qwen2.5-coder-32b-instruct",
+        "role": "coordinates swarm, makes strategic decisions"
+      },
+      "workers": [
+        {
+          "name": "Worker 1 - Code",
+          "model": "qwen2.5-coder-32b-instruct",
+          "role": "writes and refines code"
+        },
+        {
+          "name": "Worker 2 - Analysis",
+          "model": "qwen2.5-coder-32b-instruct",
+          "role": "analyzes requirements and provides insights"
+        },
+        {
+          "name": "Worker 3 - Testing",
+          "model": "qwen2.5-coder-32b-instruct",
+          "role": "creates tests and validates functionality"
+        }
+      ]
+    },
+    "consensus": {
+      "required": true,
+      "timeout": 30000
+    }
+  }
+}

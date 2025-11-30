@@ -1,6 +1,6 @@
 {
   "name": "qwen-swarm",
-  "version": "1.0.0",
+  "version": "2.2.2",
   "description": "Qwen Code-based swarm orchestration system with self-improving and self-healing capabilities",
   "main": "dist/index.js",
   "bin": {
@@ -52,7 +52,10 @@
     "agents:registry:add": "tsx src/cli/agents.ts registry add",
     "agents:registry:remove": "tsx src/cli/agents.ts registry remove",
     "agents:registry:list": "tsx src/cli/agents.ts registry list",
-    "agents:registry:update": "tsx src/cli/agents.ts registry update"
+    "agents:registry:update": "tsx src/cli/agents.ts registry update",
+    "swarm:demo": "tsx swarm-demo.ts",
+    "swarm:build": "tsc swarm-demo.ts --target es2020 --outDir dist",
+    "swarm:start": "node dist/swarm-demo.js"
   },
   "dependencies": {
     "@types/node": "^20.0.0",
