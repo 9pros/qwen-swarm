@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "bin": {
     "qwen-swarm": "dist/cli/main.js",
-    "qwen-swarm-enhanced": "dist/cli/enhanced-main.js"
+    "qwen-swarm-enhanced": "dist/cli/enhanced-main.js",
+    "qwen-swarm-agi": "dist/cli/enhanced-agi-cli.js"
   },
   "type": "module",
   "scripts": {
@@ -14,8 +15,10 @@
     "start": "node dist/index.js",
     "cli": "tsx src/cli/main.ts",
     "cli:enhanced": "tsx src/cli/enhanced-main.ts",
+    "cli:agi": "tsx src/cli/enhanced-agi-cli.ts",
     "build:cli": "tsc && tsc-alias && chmod +x dist/cli/main.js",
     "build:enhanced": "tsc && tsc-alias && chmod +x dist/cli/enhanced-main.js",
+    "build:agi": "tsc && tsc-alias && chmod +x dist/cli/enhanced-agi-cli.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=unit",
